@@ -23,6 +23,8 @@ urlpatterns = [
     path('hello/<nome>/<int:idade>/', views.hello),
     path('eventos/<titulo_evento>/', views.eventos),
     path('agenda/', views.lista_eventos),
+    path('agenda/evento/',views.evento),
+    path('agenda/evento/submit',views.submit_evento),
     path('', RedirectView.as_view(url = '/agenda/')), #ou colocar views.index e descomitar no views
     path('login/',views.login_user),
     path('login/submit', views.submit_login),
