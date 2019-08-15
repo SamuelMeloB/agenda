@@ -14,10 +14,10 @@
     <br>
     <input type="datetime-local" name="data_evento" value ="{{ evento.get_data_input_evento }}">
     <br>
-<!--    <label>Local: </label>-->
-<!--    <br>-->
-<!--    <textarea type ="text" name ="local" ></textarea>-->
-<!--    <br>-->
+    <label>Local: </label>
+    <br>
+    <input type ="text" name ="local" value="{{evento.local}}">
+    <br>
     <label>Descrição: </label>
     <br>
     <textarea name ="descricao" rows="5" cols = "24">{{evento.descricao}}</textarea>

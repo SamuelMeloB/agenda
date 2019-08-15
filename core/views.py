@@ -1,8 +1,11 @@
+from django.contrib.auth.models import User
 from django.shortcuts import render, HttpResponse, redirect
 from core.models import Evento
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from datetime import datetime,timedelta
+from django.http.response import Http404, JsonResponse
 
 # Create your views here.
 
@@ -39,7 +42,9 @@ def submit_login(request):
 @login_required(login_url='/login/')
 def lista_eventos(request): #nao instancie dentro do login senao buga
     usuario = request.user
-    evento = Evento.objects.filter(usuario=usuario) #filter(usuario=usuario)
+    data_atual = datetime.now() - timedelta(hours=1)        #se quiser que apareça todos, retira data_evento do filter
+    evento = Evento.objects.filter(usuario=usuario,
+                                   data_evento__gt=data_atual) #filter(usuario=usuario) #__gt eh depois da data e __lt eh antes da data
     dados = {'eventos': evento}
     return render(request, 'agenda.html', dados)
 
@@ -60,13 +65,14 @@ def submit_evento(request):
         data_evento = request.POST.get('data_evento')
         descricao = request.POST.get('descricao')
         id_evento = request.POST.get('id_evento')
-        # local = request.POST.get('local')
+        local = request.POST.get('local')
         if id_evento:
             evento = Evento.objects.get(id=id_evento)
             if evento.usuario == usuario:
                 evento.titulo = titulo
                 evento.descricao = descricao
                 evento.data_evento = data_evento
+                evento.local = local
                 evento.save()
             # Evento.objects.filter(id=id_evento).update(titulo=titulo,
             #                       data_evento=data_evento,
@@ -75,14 +81,25 @@ def submit_evento(request):
             Evento.objects.create(titulo=titulo,
                                   data_evento=data_evento,
                                   descricao=descricao,
-                                  # local=local,
+                                  local=local,
                                   usuario=usuario)
     return redirect('/')
 
 @login_required(login_url='/login/')
 def delete_evento(request, id_evento):
     usuario = request.user
-    evento =Evento.objects.get(id=id_evento)
+    try:
+        evento =Evento.objects.get(id=id_evento)
+    except Exception:
+        raise Http404()
     if usuario == evento.usuario:
         evento.delete()
+    else:
+        raise Http404()
     return redirect('/')
+
+def json_lista_evento(request,id_usuario): #nao instancie dentro do login senao buga
+    usuario = User.objects.get(id=id_usuario)
+    evento = Evento.objects.filter(usuario=usuario).values('id','titulo') #filter(usuario=usuario) #__gt eh depois da data e __lt eh antes da data
+    return JsonResponse(list(evento),safe=False) #ou {{'titulo':'teste'}}
+
