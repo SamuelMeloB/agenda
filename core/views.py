@@ -43,8 +43,8 @@ def submit_login(request):
 def lista_eventos(request): #nao instancie dentro do login senao buga
     usuario = request.user
     data_atual = datetime.now() - timedelta(hours=1)        #se quiser que apareça todos, retira data_evento do filter
-    evento = Evento.objects.filter(usuario=usuario,
-                                   data_evento__gt=data_atual) #filter(usuario=usuario) #__gt eh depois da data e __lt eh antes da data
+    data_1depois = datetime.now() + timedelta(hours=1) #    data_evento__gt=data_atual, data_evento__lt=data_1depois
+    evento = Evento.objects.filter(usuario=usuario) #filter(usuario=usuario) #__gt eh depois da data e __lt eh antes da data
     dados = {'eventos': evento}
     return render(request, 'agenda.html', dados)
 

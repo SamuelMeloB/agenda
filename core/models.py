@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import datetime
+from datetime import datetime,timedelta
 
 # Create your models here.
 
@@ -25,7 +25,18 @@ class Evento(models.Model):
         return self.data_evento.strftime('%Y-%m-%dT%H:%M') #um espaço faz bastante diferenca
 
     def get_evento_atrasado(self):
-        if self.data_evento < datetime.now():
+        if timedelta(minutes=0) < (datetime.now() - self.data_evento) < timedelta(minutes = 60):
             return True
         else:
             return False
+
+    # def get_evento_adiantado(self):
+    #     if datetime.now() < (timedelta(minutes=120) + self.data_evento):
+    #         return True
+    #     else:
+    #         return False
+    # def get_evento_adiantado(self):
+    #     if self.data_evento > datetime.now() + timedelta(hours=1):
+    #         return True
+    #     else:
+    #         return False
